@@ -25,7 +25,8 @@ class Reduce(Block, GroupBy):
     def process_signals(self, signals):
         self._signals_to_notify = []
         self.for_each_group(self.process_group, signals)
-        self.notify_signals(self._signals_to_notify)
+        if self._signals_to_notify:
+            self.notify_signals(self._signals_to_notify)
 
     def process_group(self, signals, key):
         """ Executed on each group of incoming signal objects.
@@ -41,8 +42,8 @@ class Reduce(Block, GroupBy):
         for signal in signals:
             try:
                 value = self.value(signal)
-            except Exception as e:
-                value = None
+            except Exception:
+                continue  # non valid signals have no impact
             if isinstance(value, list):
                 for v in value:
                     stats = self._process_value(v, stats)
