@@ -2,9 +2,7 @@
 import statistics
 
 from nio.common.signal.base import Signal
-from nio.modules.threading import sleep
 from nio.util.support.block_test_case import NIOBlockTestCase
-from nio.modules.scheduler import SchedulerModule
 from ..reduce_block import Reduce
 
 
@@ -29,7 +27,8 @@ def get_data(*args):
 
 
 class TestSimulator(NIOBlockTestCase):
-    def signals_notified(self, signals):
+
+    def signals_notified(self, signals, output_id='default'):
         self._signals = signals
 
     def test_reduce_many(self):
@@ -63,7 +62,7 @@ class TestSimulator(NIOBlockTestCase):
 
     def test_reduce_none(self):
         blk = Reduce()
-        self._signals = None
+        self._signals = []
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -98,8 +97,3 @@ class TestSimulator(NIOBlockTestCase):
         self.assertEqual(stats, self._signals[0].to_dict())
 
         blk.stop()
-
-
-
-
-
