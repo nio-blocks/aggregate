@@ -26,7 +26,7 @@ def get_data(*args):
     return many_sigs, one_sig, stats
 
 
-class TestSimulator(NIOBlockTestCase):
+class TestReduce(NIOBlockTestCase):
 
     def signals_notified(self, signals, output_id='default'):
         self._signals = signals
