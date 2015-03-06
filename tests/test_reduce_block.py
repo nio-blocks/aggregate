@@ -26,7 +26,7 @@ def get_data(*args):
     return many_sigs, one_sig, stats
 
 
-class TestSimulator(NIOBlockTestCase):
+class TestReduce(NIOBlockTestCase):
 
     def signals_notified(self, signals, output_id='default'):
         self._signals = signals
@@ -45,7 +45,6 @@ class TestSimulator(NIOBlockTestCase):
         self.configure_block(blk, config)
         blk.start()
         blk.process_signals(sigs)
-        print(stats)
         self.assertEqual(stats, self._signals[0].to_dict())
         blk.stop()
 
@@ -76,12 +75,10 @@ class TestSimulator(NIOBlockTestCase):
         self.configure_block(blk, config)
         blk.start()
         sigs, *_, stats = get_data(0, 1)
-        print(stats)
         blk.process_signals(sigs)
         self.assertEqual(stats, self._signals[0].to_dict())
 
         sigs, *_, stats = get_data(10, 11)
-        print(stats)
         blk.process_signals(sigs)
         self.assertEqual(stats, self._signals[0].to_dict())
         blk.stop()
