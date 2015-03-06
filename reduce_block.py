@@ -1,6 +1,5 @@
 import numbers
 import json
-import sys
 from nio.common.block.base import Block
 from nio.common.discovery import Discoverable, DiscoverableType
 from nio.common.signal.base import Signal
@@ -18,8 +17,8 @@ class Stats(object):
     def __init__(self):
         self._sum = 0
         self._count = 0
-        self._minimum = sys.maxsize
-        self._maximum = -sys.maxsize - 1
+        self._minimum = None
+        self._maximum = None
 
     def register_value(self, value):
         """ Include a numeric value in the stats.
@@ -28,8 +27,10 @@ class Stats(object):
         """
         self._sum += value
         self._count += 1
-        self._minimum = min(self._minimum, value)
-        self._maximum = max(self._maximum, value)
+        self._minimum = min(self._minimum, value) \
+            if self._minimum is not None else value
+        self._maximum = max(self._maximum, value) \
+            if self._maximum is not None else value
 
     def _get_dict(self):
         """ Get the stats information in a dictionary """
