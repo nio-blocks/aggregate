@@ -32,12 +32,7 @@ class TestReduce(NIOBlockTestCase):
         self._signals = signals
 
     def test_reduce_many(self):
-        """Test that the simulator simulates and keeps a good interval.
-
-        The simulator starts notifying signals only after a full interval
-        has passed. As such, waiting for 2.5 full intervals should have
-        notified two sets of signals.
-        """
+        """ Test that we can reduce many signals """
         sigs, *_, stats = get_data(100)
 
         blk = Reduce()
