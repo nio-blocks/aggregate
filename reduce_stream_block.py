@@ -68,9 +68,13 @@ class ReduceStream(Reduce):
 
             # Sum every Stats (after the first), using the first one as
             # the starting point
-            out_sigs.append(
-                sum([data[1] for data in group_stats[1:]], group_stats[0][1])
-                .get_signal())
+            sum_stats = sum(
+                [data[1] for data in group_stats[1:]],
+                group_stats[0][1])
+
+            out_sig = sum_stats.get_signal()
+            setattr(out_sig, "group", group)
+            out_sigs.append(out_sig)
 
         if out_sigs:
             self.notify_signals(out_sigs)

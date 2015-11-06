@@ -72,6 +72,7 @@ class TestReduceStream(NIOBlockTestCase):
         # The signal should only consist of two of the stats, not all 3
         self.assertEqual(self.last_notified['default'][0].count, 4)
         self.assertEqual(self.last_notified['default'][0].sum, 16)
+        self.assertEqual(self.last_notified['default'][0].group, 'groupA')
 
         # Make sure that the empty group got deleted too
         self.assertEqual(len(blk._stats_values), 1)
