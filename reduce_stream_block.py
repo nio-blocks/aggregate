@@ -33,13 +33,27 @@ class ReduceStream(Reduce):
         super().stop()
 
     def process_group(self, signals, group):
+        """ Process signals from a specific group.
+
+        The parent block will use the GroupBy mixin to call this. It will
+        get called for every group of incoming signals.
+        """
         stats = Stats()
         for signal in signals:
+            # Call the parent block's function to update our stats object
+            # with the value off of this signal
             self._process_signal_for_stats(signal, stats)
+
+        # Our stats object is built, let's lock the list of stats and add it
+        # to our group
         with self._stats_locks[group]:
             self._stats_values[group].append((_time(), stats))
 
     def report_stats(self):
+        """ Called repeatedly based on the configured report interval.
+
+        This should notify signals for the non-empty groups of data.
+        """
         out_sigs = []
         # Iterate over a list rather than the iterator so that we can delete
         # items that are empty lists
