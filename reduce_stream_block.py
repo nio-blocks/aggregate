@@ -36,32 +36,36 @@ class ReduceStream(Reduce):
         stats = Stats()
         for signal in signals:
             self._process_signal_for_stats(signal, stats)
-        with self._stats_locks(group):
+        with self._stats_locks[group]:
             self._stats_values[group].append((_time(), stats))
 
     def report_stats(self):
         out_sigs = []
-        for group in self._stats_values:
-            with self._stats_locks(group):
-                self.trim_old_values(group, _time())
+        # Iterate over a list rather than the iterator so that we can delete
+        # items that are empty lists
+        for group, group_stats in list(self._stats_values.items()):
+            with self._stats_locks[group]:
+                self.trim_old_values(group_stats, _time())
 
                 # If they were all old, get rid of the group
-                if len(self._stats_values[group]) == 0:
+                if len(group_stats) == 0:
                     del self._stats_values[group]
                     continue
 
-                group_stats = self._stats_values[group]
+            # Sum every Stats (after the first), using the first one as
+            # the starting point
+            out_sigs.append(
+                sum([data[1] for data in group_stats[1:]], group_stats[0][1])
+                .get_signal())
 
-            out_sigs.append(sum(group_stats).get_signal())
         if out_sigs:
             self.notify_signals(out_sigs)
 
-    def trim_old_values(self, group, ctime):
-        """ Remove any "old" saved values for a given group """
-        stats_values = self._stats_values[group]
+    def trim_old_values(self, group_stats, ctime):
+        """ Remove any "old" saved values for a given list """
         self._logger.debug("Trimming old values - had {} items".format(
-            len(stats_values)))
-        stats_values[:] = [
-            data for data in stats_values
+            len(group_stats)))
+        group_stats[:] = [
+            data for data in group_stats
             if data[0] > ctime - self.averaging_interval.total_seconds()]
-        self._logger.debug("Now has {} items".format(len(stats_values)))
+        self._logger.debug("Now has {} items".format(len(group_stats)))
