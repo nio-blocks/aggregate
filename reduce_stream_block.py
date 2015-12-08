@@ -66,11 +66,9 @@ class ReduceStream(Reduce):
                     del self._stats_values[group]
                     continue
 
-            # Sum every Stats (after the first), using the first one as
-            # the starting point
-            sum_stats = sum(
-                [data[1] for data in group_stats[1:]],
-                group_stats[0][1])
+            # Sum every Stats (second item in list) - start with an empty
+            # Stats object
+            sum_stats = sum([data[1] for data in group_stats], Stats())
 
             out_sig = sum_stats.get_signal()
             setattr(out_sig, "group", group)
