@@ -1,53 +1,9 @@
 import numbers
-import json
 from nio.common.block.base import Block
 from nio.common.discovery import Discoverable, DiscoverableType
-from nio.common.signal.base import Signal
 from nio.metadata.properties.expression import ExpressionProperty
 from .mixins.group_by.group_by_block import GroupBy
-
-
-class Stats(object):
-
-    """ An object that will contain arithmetic aggregate information.
-
-    Numbers can be "registered" with this object to update the stats.
-    """
-
-    def __init__(self):
-        self._sum = 0
-        self._count = 0
-        self._minimum = None
-        self._maximum = None
-
-    def register_value(self, value):
-        """ Include a numeric value in the stats.
-
-        Requires that the passed value be numeric
-        """
-        self._sum += value
-        self._count += 1
-        self._minimum = min(self._minimum, value) \
-            if self._minimum is not None else value
-        self._maximum = max(self._maximum, value) \
-            if self._maximum is not None else value
-
-    def _get_dict(self):
-        """ Get the stats information in a dictionary """
-        return {
-            "count": self._count,
-            "sum": self._sum,
-            "average": self._sum / self._count if self._count > 0 else None,
-            "min": self._minimum,
-            "max": self._maximum,
-        }
-
-    def get_signal(self):
-        """ Produce a Signal with the stats information """
-        return Signal(self._get_dict())
-
-    def __str__(self):
-        return json.dumps(self._get_dict())
+from .stats_data import Stats
 
 
 @Discoverable(DiscoverableType.block)
@@ -63,15 +19,11 @@ class Reduce(GroupBy, Block):
         title="Reduce Input Value", default="{{$value}}")
 
     def process_signals(self, signals):
-        signals_to_notify = []
-        self.for_each_group(
-            self.process_group,
-            signals,
-            kwargs={"to_notify": signals_to_notify})
+        signals_to_notify = self.for_each_group(self.process_group, signals)
         if signals_to_notify:
             self.notify_signals(signals_to_notify)
 
-    def process_group(self, signals, key, to_notify):
+    def process_group(self, signals, key):
         """ Executed on each group of incoming signal objects.
         Increments the appropriate count and generates an informative
         output signal.
@@ -80,22 +32,29 @@ class Reduce(GroupBy, Block):
         stats = Stats()
 
         for signal in signals:
-            try:
-                value = self.value(signal)
-            except Exception as e:
-                self._logger.warning(
-                    "Unable to compute value from signal : {} : {} {}".format(
-                        signal, type(e).__name__, str(e)))
-                continue  # non valid signals are ignored
-
-            if isinstance(value, list):
-                [self._process_value(v, stats) for v in value]
-            else:
-                self._process_value(value, stats)
+            self._process_signal_for_stats(signal, stats)
 
         out_sig = stats.get_signal()
         setattr(out_sig, 'group', key)
-        to_notify.append(out_sig)
+        return out_sig
+
+    def _process_signal_for_stats(self, signal, stats):
+        """ Take action on a Stats object for this signal.
+
+        This should not return anything, it should update the Stats object.
+        """
+        try:
+            value = self.value(signal)
+        except:
+            self._logger.warning(
+                "Unable to compute value from signal : {}".format(signal),
+                exc_info=True)
+            return  # non valid signals are ignored
+
+        if isinstance(value, list):
+            [self._process_value(v, stats) for v in value]
+        else:
+            self._process_value(value, stats)
 
     def _process_value(self, value, stats):
         """ Takes a number and some existing stats and updates them.
