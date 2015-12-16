@@ -4,12 +4,13 @@ from nio.common.discovery import Discoverable, DiscoverableType
 from nio.metadata.properties import TimeDeltaProperty
 from nio.modules.threading import Lock
 from nio.modules.scheduler import Job
+from .mixins.persistence.persistence import Persistence
 from .stats_data import Stats
 from .reduce_block import Reduce
 
 
 @Discoverable(DiscoverableType.block)
-class ReduceStream(Reduce):
+class ReduceStream(Persistence, Reduce):
 
     report_interval = TimeDeltaProperty(
         default={"seconds": 1}, title="Report Interval")
@@ -18,9 +19,13 @@ class ReduceStream(Reduce):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self._stats_values = defaultdict(list)
         self._stats_locks = defaultdict(Lock)
+
+    def persisted_values(self):
+        return {
+            "stats_values": "_stats_values"
+        }
 
     def start(self):
         super().start()
