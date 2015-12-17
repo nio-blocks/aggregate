@@ -1,4 +1,5 @@
-from unittest.mock import MagicMock
+from collections import defaultdict
+from unittest.mock import MagicMock, patch
 from time import sleep, time as _time
 from nio.common.signal.base import Signal
 from nio.util.support.block_test_case import NIOBlockTestCase
@@ -7,6 +8,13 @@ from ..reduce_stream_block import ReduceStream
 
 
 class TestReduceStream(NIOBlockTestCase):
+
+    def get_test_modules(self):
+        return super().get_test_modules() + ['persistence']
+
+    def get_module_config_persistence(self):
+        """ Make sure we use in-memory persistence """
+        return {'persistence': 'default'}
 
     def test_groups_properly(self):
         """ Tests that incoming signals are bucketed properly """
@@ -91,3 +99,36 @@ class TestReduceStream(NIOBlockTestCase):
         self.assertGreater(blk.report_stats.call_count, 1)
         self.assert_num_signals_notified(0)
         blk.stop()
+
+    def test_persistence(self):
+        """ Test that the block uses persistence """
+        blk = ReduceStream()
+        with patch('nio.modules.persistence.default.Persistence.load') as load:
+            with patch('nio.modules.persistence.default.Persistence.has_key'):
+                # Configure block to load some persisted stats
+                previous_stats_values = defaultdict(list)
+                previous_stats_values['null'].append((_time(), Stats()))
+                load.return_value = previous_stats_values
+                self.configure_block(blk, {})
+                blk.persistence.store = MagicMock()
+                blk.persistence.save = MagicMock()
+        # Confirm that stats were loaded from persistence
+        self.assertEqual(len(blk._stats_values), 1)
+        self.assertEqual(len(blk._stats_values['null']), 1)
+        self.assertEqual(blk._stats_values['null'][0][1]._count, 0)
+        # Start the block and process signals
+        blk.start()
+        blk.process_signals([Signal({"value": 9}),
+                             Signal({"value": 4}),
+                             Signal({"value": 3})])
+        # Confirm that new stats are registered
+        self.assertEqual(len(blk._stats_values), 1)
+        self.assertEqual(len(blk._stats_values['null']), 2)
+        self.assertEqual(blk._stats_values['null'][1][1]._count, 3)
+        blk.stop()
+        # Check that stats are persisted at the end
+        blk.persistence.store.assert_called_once_with(
+            'stats_values', blk._stats_values
+        )
+        # TODO: is there a way to confirm store was called before save?
+        blk.persistence.save.assert_called_once_with()

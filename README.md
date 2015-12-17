@@ -78,6 +78,7 @@ The block operates in a "trailing" manner, meaning that if you configure the blo
 
 The block will maintain one Stats object for every list of signals that it receives. Once a stats object is outside of the averaging interval, it will be deleted and deallocated. Because there is only one stats object for an incoming list, it can sometimes be a performance enhancement to put a Buffer block before the ReduceStream block. Sending 5 individual signals to this block will cause 5 objects to be created; sending a list of those same 5 signals will result in the same calculation to occur but only one object will be created.
 
+Stats objects are optionally persisted across block/service restarts.
 
 Properties
 ---------
