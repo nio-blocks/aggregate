@@ -103,15 +103,15 @@ class TestReduceStream(NIOBlockTestCase):
     def test_persistence(self):
         """ Test that the block uses persistence """
         blk = ReduceStream()
-        with patch('nio.modules.persistence.default.Persistence.load') as load:
-            with patch('nio.modules.persistence.default.Persistence.has_key'):
-                # Configure block to load some persisted stats
-                previous_stats_values = defaultdict(list)
-                previous_stats_values['null'].append((_time(), Stats()))
-                load.return_value = previous_stats_values
-                self.configure_block(blk, {})
-                blk.persistence.store = MagicMock()
-                blk.persistence.save = MagicMock()
+        with patch('nio.common.block.base.Persistence') as persist:
+            # Configure block to load some persisted stats
+            previous_stats_values = defaultdict(list)
+            previous_stats_values['null'].append((_time(), Stats()))
+            persist.return_value.load.return_value = previous_stats_values
+            # Only load persisted values for the specified keys
+            persist.return_value.has_key.side_effect = \
+                lambda key: key in ["stats_values"]
+            self.configure_block(blk, {})
         # Confirm that stats were loaded from persistence
         self.assertEqual(len(blk._stats_values), 1)
         self.assertEqual(len(blk._stats_values['null']), 1)
