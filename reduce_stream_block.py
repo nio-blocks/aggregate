@@ -1,15 +1,15 @@
 from collections import defaultdict
 from time import time as _time
-from nio.common.discovery import Discoverable, DiscoverableType
-from nio.metadata.properties import TimeDeltaProperty
-from nio.modules.threading import Lock
+from nio.util.discovery import discoverable
+from nio.properties import TimeDeltaProperty
+from threading import Lock
 from nio.modules.scheduler import Job
-from .mixins.persistence.persistence import Persistence
+from nio.block.mixins.persistence.persistence import Persistence
 from .stats_data import Stats
 from .reduce_block import Reduce
 
 
-@Discoverable(DiscoverableType.block)
+@discoverable
 class ReduceStream(Persistence, Reduce):
 
     report_interval = TimeDeltaProperty(
@@ -23,14 +23,12 @@ class ReduceStream(Persistence, Reduce):
         self._stats_locks = defaultdict(Lock)
 
     def persisted_values(self):
-        return {
-            "stats_values": "_stats_values"
-        }
+        return ["_stats_values"]
 
     def start(self):
         super().start()
         self._start_time = _time()
-        self._job = Job(self.report_stats, self.report_interval, True)
+        self._job = Job(self.report_stats, self.report_interval(), True)
 
     def stop(self):
         if self._job:
@@ -84,9 +82,9 @@ class ReduceStream(Persistence, Reduce):
 
     def trim_old_values(self, group_stats, ctime):
         """ Remove any "old" saved values for a given list """
-        self._logger.debug("Trimming old values - had {} items".format(
+        self.logger.debug("Trimming old values - had {} items".format(
             len(group_stats)))
         group_stats[:] = [
             data for data in group_stats
-            if data[0] > ctime - self.averaging_interval.total_seconds()]
-        self._logger.debug("Now has {} items".format(len(group_stats)))
+            if data[0] > ctime - self.averaging_interval().total_seconds()]
+        self.logger.debug("Now has {} items".format(len(group_stats)))

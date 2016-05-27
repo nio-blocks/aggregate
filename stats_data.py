@@ -1,5 +1,5 @@
 import json
-from nio.common.signal.base import Signal
+from nio.signal.base import Signal
 
 
 class Stats(object):
