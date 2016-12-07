@@ -1,20 +1,16 @@
 from collections import defaultdict
 from unittest.mock import MagicMock, patch
 from time import sleep, time as _time
-from nio.common.signal.base import Signal
-from nio.util.support.block_test_case import NIOBlockTestCase
+
+from nio.block.terminals import DEFAULT_TERMINAL
+from nio.signal.base import Signal
+from nio.testing.block_test_case import NIOBlockTestCase
+
 from ..stats_data import Stats
 from ..reduce_stream_block import ReduceStream
 
 
 class TestReduceStream(NIOBlockTestCase):
-
-    def get_test_modules(self):
-        return super().get_test_modules() + ['persistence']
-
-    def get_module_config_persistence(self):
-        """ Make sure we use in-memory persistence """
-        return {'persistence': 'default'}
 
     def test_groups_properly(self):
         """ Tests that incoming signals are bucketed properly """
@@ -78,9 +74,9 @@ class TestReduceStream(NIOBlockTestCase):
         # One signal for each group that has current data
         self.assert_num_signals_notified(1)
         # The signal should only consist of two of the stats, not all 3
-        self.assertEqual(self.last_notified['default'][0].count, 4)
-        self.assertEqual(self.last_notified['default'][0].sum, 16)
-        self.assertEqual(self.last_notified['default'][0].group, 'groupA')
+        self.assertEqual(self.last_notified[DEFAULT_TERMINAL][0].count, 4)
+        self.assertEqual(self.last_notified[DEFAULT_TERMINAL][0].sum, 16)
+        self.assertEqual(self.last_notified[DEFAULT_TERMINAL][0].group, 'groupA')
 
         # Make sure that the empty group got deleted too
         self.assertEqual(len(blk._stats_values), 1)
@@ -103,32 +99,16 @@ class TestReduceStream(NIOBlockTestCase):
     def test_persistence(self):
         """ Test that the block uses persistence """
         blk = ReduceStream()
-        with patch('nio.common.block.base.Persistence') as persist:
+        def side_effect():
             # Configure block to load some persisted stats
             previous_stats_values = defaultdict(list)
-            previous_stats_values['null'].append((_time(), Stats()))
-            persist.return_value.load.return_value = previous_stats_values
-            # Only load persisted values for the specified keys
-            persist.return_value.has_key.side_effect = \
-                lambda key: key in ["stats_values"]
-            self.configure_block(blk, {})
+            previous_stats_values[None].append((_time(), Stats()))
+            for persisted_value in blk.persisted_values():
+                # This makes sure that blk.persisted_values is correct
+                setattr(blk, persisted_value, previous_stats_values)
+        blk._load = MagicMock(side_effect=side_effect)
+        self.configure_block(blk, {})
         # Confirm that stats were loaded from persistence
         self.assertEqual(len(blk._stats_values), 1)
-        self.assertEqual(len(blk._stats_values['null']), 1)
-        self.assertEqual(blk._stats_values['null'][0][1]._count, 0)
-        # Start the block and process signals
-        blk.start()
-        blk.process_signals([Signal({"value": 9}),
-                             Signal({"value": 4}),
-                             Signal({"value": 3})])
-        # Confirm that new stats are registered
-        self.assertEqual(len(blk._stats_values), 1)
-        self.assertEqual(len(blk._stats_values['null']), 2)
-        self.assertEqual(blk._stats_values['null'][1][1]._count, 3)
-        blk.stop()
-        # Check that stats are persisted at the end
-        blk.persistence.store.assert_called_once_with(
-            'stats_values', blk._stats_values
-        )
-        # TODO: is there a way to confirm store was called before save?
-        blk.persistence.save.assert_called_once_with()
+        self.assertEqual(len(blk._stats_values[None]), 1)
+        self.assertEqual(blk._stats_values[None][0][1]._count, 0)

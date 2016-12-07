@@ -1,22 +1,24 @@
 import numbers
-from nio.common.block.base import Block
-from nio.common.discovery import Discoverable, DiscoverableType
-from nio.metadata.properties.expression import ExpressionProperty
-from .mixins.group_by.group_by_block import GroupBy
+
+from nio.block.base import Block
+from nio.util.discovery import discoverable
+from nio.properties import Property
+from nio.block.mixins.group_by.group_by import GroupBy
+
 from .stats_data import Stats
 
 
-@Discoverable(DiscoverableType.block)
+@discoverable
 class Reduce(GroupBy, Block):
 
     """ Performs arithmetic reduce operations on input signals.
 
     Properties:
-        group_by (ExpressionProperty): The value by which signals are grouped.
-        value (ExpressionProperty): The value to be passed to reduce functions.
+        group_by (Property): The value by which signals are grouped.
+        value (Property): The value to be passed to reduce functions.
     """
-    value = ExpressionProperty(
-        title="Reduce Input Value", default="{{$value}}")
+    value = Property(
+        title="Reduce Input Value", default="{{ $value }}")
 
     def process_signals(self, signals):
         signals_to_notify = self.for_each_group(self.process_group, signals)
@@ -46,7 +48,7 @@ class Reduce(GroupBy, Block):
         try:
             value = self.value(signal)
         except:
-            self._logger.warning(
+            self.logger.warning(
                 "Unable to compute value from signal : {}".format(signal),
                 exc_info=True)
             return  # non valid signals are ignored
@@ -67,6 +69,6 @@ class Reduce(GroupBy, Block):
         """
         if isinstance(value, numbers.Number):
             stats.register_value(value)
-            self._logger.debug("After {}, stats are {}".format(value, stats))
+            self.logger.debug("After {}, stats are {}".format(value, stats))
         else:
-            self._logger.warning("{} is not a number".format(value))
+            self.logger.warning("{} is not a number".format(value))
