@@ -2,8 +2,8 @@
 - [Reduce](#reduce)
 - [ReduceStream](#reducestream)
 
-# Reduce
-
+Reduce
+==============
 Computes some arithmetic information about groups of signals.
 
 This block can be passed a list of signals and it will output aggregate information about one of the attributes (or something more complex) about the signals. The aggregate information currently output is the sum, average, count, minimum, and maximum. Since the output is numeric, it will require the value to be operated on to also be numeric. Non-numeric values will be ignored.
@@ -41,8 +41,8 @@ _Signal Output_:
 Properties
 ---------
 
--   **Reduce Input Value**: (expression) The value for each signal to use in the computations
--   **Group By**: (expression) What to group the signals by. A different output signal will be produced for each group
+-   **Reduce Input Value**: (type:expression) The value for each signal to use in the computations
+-   **Group By**: (type:expression) What to group the signals by. A different output signal will be produced for each group
 
 Dependencies
 ------------
@@ -67,8 +67,10 @@ One signal per group, containing the following attributes:
 - max
 - group
 
+***
 
-# ReduceStream
+ReduceStream
+================
 
 Similar to the Reduce block, but instead works on streams of data and notifies average stats on a regular interval.
 
@@ -83,10 +85,10 @@ Stats objects are optionally persisted across block/service restarts.
 Properties
 ---------
 
--   **Reduce Input Value**: (expression) The value for each signal to use in the computations
--   **Group By**: (expression) What to group the signals by. A different output signal will be produced for each group
--   **Averaging Interval**: (timedelta) What period of time to compute the averages/min/max/etc for. This is a "trailing" field, so setting it to 24 hours will always notify information about the **trailing** 24 hours.
--   **Reporting Interval**: (timedelta) How often to notify signals from this block. Note that signals are not notified based on incoming signals, but rather this interval.
+-   **Reduce Input Value**: (type:expression) The value for each signal to use in the computations
+-   **Group By**: (type:expression) What to group the signals by. A different output signal will be produced for each group
+-   **Averaging Interval**: (type:timedelta) What period of time to compute the averages/min/max/etc for. This is a "trailing" field, so setting it to 24 hours will always notify information about the **trailing** 24 hours.
+-   **Reporting Interval**: (type:timedelta) How often to notify signals from this block. Note that signals are not notified based on incoming signals, but rather this interval.
 
 Dependencies
 ------------

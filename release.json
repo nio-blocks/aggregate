@@ -1,0 +1,12 @@
+{
+  "nio/Reduce": {
+    "Reference": "github.com/nio-blocks/reduce.git@v1.0.0",
+    "Version": "1.0.0",
+    "Language": "Python"
+  },
+  "nio/ReduceStream": {
+    "Reference": "github.com/nio-blocks/reduce.git@v1.0.0",
+    "Version": "1.0.0",
+    "Language": "Python"
+  }
+}
