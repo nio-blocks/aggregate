@@ -1,4 +1,5 @@
 import json
+
 from nio.signal.base import Signal
 
 

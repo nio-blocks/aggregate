@@ -38,7 +38,8 @@ class TestReduce(NIOBlockTestCase):
         self.configure_block(blk, config)
         blk.start()
         blk.process_signals(sigs)
-        self.assertEqual(stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
+        self.assertEqual(
+            stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
         blk.stop()
 
     def test_reduce_list(self):
@@ -49,7 +50,8 @@ class TestReduce(NIOBlockTestCase):
         self.configure_block(blk, config)
         blk.start()
         blk.process_signals(sigs)
-        self.assertEqual(stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
+        self.assertEqual(
+            stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
         blk.stop()
 
     def test_reduce_none(self):
@@ -68,11 +70,13 @@ class TestReduce(NIOBlockTestCase):
         blk.start()
         sigs, *_, stats = get_data(0, 1)
         blk.process_signals(sigs)
-        self.assertEqual(stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
+        self.assertEqual(
+            stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
 
         sigs, *_, stats = get_data(10, 11)
         blk.process_signals(sigs)
-        self.assertEqual(stats, self.last_notified[DEFAULT_TERMINAL][1].to_dict())
+        self.assertEqual(
+            stats, self.last_notified[DEFAULT_TERMINAL][1].to_dict())
         blk.stop()
 
     def test_reduce_nonsigs(self):
@@ -83,6 +87,7 @@ class TestReduce(NIOBlockTestCase):
         sigs, *_, stats = get_data(0, 100)
         sigs.append(Signal({"not_value": 10000}))
         blk.process_signals(sigs)
-        self.assertEqual(stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
+        self.assertEqual(
+            stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
 
         blk.stop()

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from time import sleep, time as _time
 
 from nio.block.terminals import DEFAULT_TERMINAL
@@ -76,7 +76,8 @@ class TestReduceStream(NIOBlockTestCase):
         # The signal should only consist of two of the stats, not all 3
         self.assertEqual(self.last_notified[DEFAULT_TERMINAL][0].count, 4)
         self.assertEqual(self.last_notified[DEFAULT_TERMINAL][0].sum, 16)
-        self.assertEqual(self.last_notified[DEFAULT_TERMINAL][0].group, 'groupA')
+        self.assertEqual(
+            self.last_notified[DEFAULT_TERMINAL][0].group, 'groupA')
 
         # Make sure that the empty group got deleted too
         self.assertEqual(len(blk._stats_values), 1)
@@ -99,6 +100,7 @@ class TestReduceStream(NIOBlockTestCase):
     def test_persistence(self):
         """ Test that the block uses persistence """
         blk = ReduceStream()
+
         def side_effect():
             # Configure block to load some persisted stats
             previous_stats_values = defaultdict(list)
