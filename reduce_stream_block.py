@@ -1,17 +1,18 @@
 from collections import defaultdict
 from time import time as _time
-from nio.util.discovery import discoverable
-from nio.properties import TimeDeltaProperty
 from threading import Lock
+
+from nio.properties import TimeDeltaProperty, VersionProperty
 from nio.modules.scheduler import Job
 from nio.block.mixins.persistence.persistence import Persistence
+
 from .stats_data import Stats
 from .reduce_block import Reduce
 
 
-@discoverable
 class ReduceStream(Persistence, Reduce):
 
+    version = VersionProperty('0.1.0')
     report_interval = TimeDeltaProperty(
         default={"seconds": 1}, title="Report Interval")
     averaging_interval = TimeDeltaProperty(

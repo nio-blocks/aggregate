@@ -1,14 +1,12 @@
 import numbers
 
 from nio.block.base import Block
-from nio.util.discovery import discoverable
-from nio.properties import Property
+from nio.properties import Property, VersionProperty
 from nio.block.mixins.group_by.group_by import GroupBy
 
 from .stats_data import Stats
 
 
-@discoverable
 class Reduce(GroupBy, Block):
 
     """ Performs arithmetic reduce operations on input signals.
@@ -17,6 +15,7 @@ class Reduce(GroupBy, Block):
         group_by (Property): The value by which signals are grouped.
         value (Property): The value to be passed to reduce functions.
     """
+    version = VersionProperty('0.1.0')
     value = Property(
         title="Reduce Input Value", default="{{ $value }}")
 
