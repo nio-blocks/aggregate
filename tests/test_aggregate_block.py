@@ -4,7 +4,7 @@ from nio.block.terminals import DEFAULT_TERMINAL
 from nio.signal.base import Signal
 from nio.testing.block_test_case import NIOBlockTestCase
 
-from ..reduce_block_deprecated import Reduce
+from ..aggregate_block import Aggregate
 
 
 def get_stats(data):
@@ -27,13 +27,13 @@ def get_data(*args):
     return many_sigs, one_sig, stats
 
 
-class TestReduce(NIOBlockTestCase):
+class TestAggregate(NIOBlockTestCase):
 
-    def test_reduce_many(self):
-        """ Test that we can reduce many signals """
+    def test_aggregate_many(self):
+        """ Test that we can aggregate many signals """
         sigs, *_, stats = get_data(100)
 
-        blk = Reduce()
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -42,10 +42,10 @@ class TestReduce(NIOBlockTestCase):
             stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
         blk.stop()
 
-    def test_reduce_list(self):
+    def test_aggregate_list(self):
         _, sigs, stats = get_data(100)
 
-        blk = Reduce()
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -54,8 +54,8 @@ class TestReduce(NIOBlockTestCase):
             stats, self.last_notified[DEFAULT_TERMINAL][0].to_dict())
         blk.stop()
 
-    def test_reduce_none(self):
-        blk = Reduce()
+    def test_aggregate_none(self):
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -63,8 +63,8 @@ class TestReduce(NIOBlockTestCase):
         self.assertEqual(0, len(self.last_notified[DEFAULT_TERMINAL]))
         blk.stop()
 
-    def test_reduce_one(self):
-        blk = Reduce()
+    def test_aggregate_one(self):
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -79,8 +79,8 @@ class TestReduce(NIOBlockTestCase):
             stats, self.last_notified[DEFAULT_TERMINAL][1].to_dict())
         blk.stop()
 
-    def test_reduce_nonsigs(self):
-        blk = Reduce()
+    def test_aggregate_nonsigs(self):
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
