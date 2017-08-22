@@ -7,14 +7,14 @@ from nio.signal.base import Signal
 from nio.testing.block_test_case import NIOBlockTestCase
 
 from ..stats_data import Stats
-from ..reduce_stream_block_deprecated import ReduceStream
+from ..aggregate_stream_block import AggregateStream
 
 
-class TestReduceStream(NIOBlockTestCase):
+class TestAggregateStream(NIOBlockTestCase):
 
     def test_groups_properly(self):
         """ Tests that incoming signals are bucketed properly """
-        blk = ReduceStream()
+        blk = AggregateStream()
         self.configure_block(blk, {
             "value": "{{ $value }}",
             "group_by": "{{ $group }}"
@@ -53,7 +53,7 @@ class TestReduceStream(NIOBlockTestCase):
 
     def test_drop_old_stats(self):
         """ Tests that during a report old data is not included """
-        blk = ReduceStream()
+        blk = AggregateStream()
         self.configure_block(blk, {
             "averaging_interval": {"seconds": 5}
         })
@@ -84,7 +84,7 @@ class TestReduceStream(NIOBlockTestCase):
 
     def test_report_scheduled(self):
         """ Test that the block will report periodically """
-        blk = ReduceStream()
+        blk = AggregateStream()
         self.configure_block(blk, {
             "report_interval": {"microseconds": 300000}
         })
@@ -99,7 +99,7 @@ class TestReduceStream(NIOBlockTestCase):
 
     def test_persistence(self):
         """ Test that the block uses persistence """
-        blk = ReduceStream()
+        blk = AggregateStream()
 
         def side_effect():
             # Configure block to load some persisted stats

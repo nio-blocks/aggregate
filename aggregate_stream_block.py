@@ -7,10 +7,10 @@ from nio.modules.scheduler import Job
 from nio.block.mixins.persistence.persistence import Persistence
 
 from .stats_data import Stats
-from .reduce_block import Reduce
+from .aggregate_block import Aggregate
 
 
-class ReduceStream(Persistence, Reduce):
+class AggregateStream(Persistence, Aggregate):
 
     version = VersionProperty('0.1.0')
     report_interval = TimeDeltaProperty(

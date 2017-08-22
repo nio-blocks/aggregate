@@ -4,7 +4,7 @@ from nio.block.terminals import DEFAULT_TERMINAL
 from nio.signal.base import Signal
 from nio.testing.block_test_case import NIOBlockTestCase
 
-from ..reduce_block_deprecated import Reduce
+from ..aggregate_block import Aggregate
 
 
 def get_stats(data):
@@ -27,13 +27,13 @@ def get_data(*args):
     return many_sigs, one_sig, stats
 
 
-class TestReduce(NIOBlockTestCase):
+class TestAggregate(NIOBlockTestCase):
 
     def test_reduce_many(self):
         """ Test that we can reduce many signals """
         sigs, *_, stats = get_data(100)
 
-        blk = Reduce()
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -45,7 +45,7 @@ class TestReduce(NIOBlockTestCase):
     def test_reduce_list(self):
         _, sigs, stats = get_data(100)
 
-        blk = Reduce()
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -55,7 +55,7 @@ class TestReduce(NIOBlockTestCase):
         blk.stop()
 
     def test_reduce_none(self):
-        blk = Reduce()
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -64,7 +64,7 @@ class TestReduce(NIOBlockTestCase):
         blk.stop()
 
     def test_reduce_one(self):
-        blk = Reduce()
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()
@@ -80,7 +80,7 @@ class TestReduce(NIOBlockTestCase):
         blk.stop()
 
     def test_reduce_nonsigs(self):
-        blk = Reduce()
+        blk = Aggregate()
         config = {'value': '{{$.value}}'}
         self.configure_block(blk, config)
         blk.start()

@@ -7,17 +7,17 @@ from nio.block.mixins.group_by.group_by import GroupBy
 from .stats_data import Stats
 
 
-class Reduce(GroupBy, Block):
+class Aggregate(GroupBy, Block):
 
-    """ Performs arithmetic reduce operations on input signals.
+    """ Performs arithmetic aggregate operations on input signals.
 
     Properties:
         group_by (Property): The value by which signals are grouped.
-        value (Property): The value to be passed to reduce functions.
+        value (Property): The value to be passed to aggregate functions.
     """
     version = VersionProperty('0.1.0')
     value = Property(
-        title="Reduce Input Value", default="{{ $value }}")
+        title="Aggregate Input Value", default="{{ $value }}")
 
     def process_signals(self, signals):
         signals_to_notify = self.for_each_group(self.process_group, signals)

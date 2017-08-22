@@ -1,5 +1,5 @@
 {
-  "nio/Reduce": {
+  "nio/Aggregate": {
     "version": "0.1.0",
     "description": "Computes some arithmetic information about groups of signals.",
     "properties": {
@@ -10,7 +10,7 @@
         "default": null
       },
       "value": {
-        "title": "Reduce Input Value",
+        "title": "Aggregate Input Value",
         "type": "Type",
         "description": "The value for each signal to use in the computations.",
         "default": "{{ $value }}"
@@ -33,7 +33,7 @@
       }
     }
   },
-  "nio/ReduceStream": {
+  "nio/AggregateStream": {
     "version": "0.1.0",
     "description": "Computes some arithmetic information about a streams of data and notifies the computations on an interval basis.",
     "properties": {
@@ -74,7 +74,105 @@
         }
       },
       "value": {
-        "title": "Reduce Input Value",
+        "title": "Aggregate Input Value",
+        "type": "Type",
+        "description": "The value for each signal to use in the computations.",
+        "default": "{{ $value }}"
+      }
+    },
+    "inputs": {
+      "default": {
+        "description": "Any list of signals with numeric values."
+      }
+    },
+    "outputs": {
+      "default": {
+        "description": "The computed sum, average, count, minimum, and maximum for the incoming data stream over the specified interval."
+      }
+    },
+    "commands": {
+      "groups": {
+        "description": "Displays the current groupings of signals.",
+        "params": {}
+      }
+    }
+  },
+  "nio/Reduce": {
+    "version": "0.1.0",
+    "description": "DEPRECATED, USE Aggregate INSTEAD - Computes some arithmetic information about groups of signals.",
+    "properties": {
+      "group_by": {
+        "title": "Group By",
+        "type": "Type",
+        "description": "Attribute to group signals by. A different output signal will be produced for each group.",
+        "default": null
+      },
+      "value": {
+        "title": "Aggregate Input Value",
+        "type": "Type",
+        "description": "The value for each signal to use in the computations.",
+        "default": "{{ $value }}"
+      }
+    },
+    "inputs": {
+      "default": {
+        "description": "Any list of signals with numeric values."
+      }
+    },
+    "outputs": {
+      "default": {
+        "description": "The computed sum, average, count, minimum, and maximum for the list of values specified."
+      }
+    },
+    "commands": {
+      "groups": {
+        "description": "Displays the current groupings of signals.",
+        "params": {}
+      }
+    }
+  },
+  "nio/ReduceStream": {
+    "version": "0.1.0",
+    "description": "DEPRECATED, USE AggregateStream INSTEAD - Computes some arithmetic information about a streams of data and notifies the computations on an interval basis.",
+    "properties": {
+      "averaging_interval": {
+        "title": "Averaging Interval",
+        "type": "TimeDeltaType",
+        "description": "What period of time to compute the averages/min/max/etc for. This is a 'trailing' field, so setting it to 24 hours will always notify information about the **trailing** 24 hours.",
+        "default": {
+          "seconds": 5
+        }
+      },
+      "backup_interval": {
+        "title": "Backup Interval",
+        "type": "TimeDeltaType",
+        "description": "Period at which stream states are backed up to disk using persistance.",
+        "default": {
+          "seconds": 3600
+        }
+      },
+      "group_by": {
+        "title": "Group By",
+        "type": "Type",
+        "description": "Attribute to group signals by. A different output signal will be produced for each group.",
+        "default": null
+      },
+      "load_from_persistence": {
+        "title": "Load from Persistence?",
+        "type": "BoolType",
+        "description": "If true, the previous state of the stream/interval is loaded upon block restart.",
+        "default": true
+      },
+      "report_interval": {
+        "title": "Report Interval",
+        "type": "TimeDeltaType",
+        "description": "How often to notify signals from this block. Note that signals are not notified based on incoming signals, but rather this interval.",
+        "default": {
+          "seconds": 1
+        }
+      },
+      "value": {
+        "title": "Aggregate Input Value",
         "type": "Type",
         "description": "The value for each signal to use in the computations.",
         "default": "{{ $value }}"
