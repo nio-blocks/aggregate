@@ -1,22 +1,22 @@
 {
   "nio/Aggregate": {
     "language": "Python",
-    "url": "git://github.com//nio-blocks/reduce.git",
+    "url": "git://github.com/nio-blocks/aggregate.git",
     "version": "0.1.0"
   },
   "nio/AggregateStream": {
     "language": "Python",
-    "url": "git://github.com//nio-blocks/reduce.git",
+    "url": "git://github.com/nio-blocks/aggregate.git",
     "version": "0.1.0"
   },
   "nio/Reduce": {
     "language": "Python",
-    "url": "git://github.com//nio-blocks/reduce.git",
+    "url": "git://github.com/nio-blocks/reduce.git",
     "version": "0.1.0"
   },
   "nio/ReduceStream": {
     "language": "Python",
-    "url": "git://github.com//nio-blocks/reduce.git",
+    "url": "git://github.com/nio-blocks/reduce.git",
     "version": "0.1.0"
   }
 }
