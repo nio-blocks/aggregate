@@ -2,6 +2,9 @@
   "nio/Aggregate": {
     "version": "0.1.0",
     "description": "Computes some arithmetic information about groups of signals.",
+    "categories": [
+      "Signal Inspection"
+    ],
     "properties": {
       "group_by": {
         "title": "Group By",
@@ -36,6 +39,9 @@
   "nio/AggregateStream": {
     "version": "0.1.0",
     "description": "Computes some arithmetic information about a streams of data and notifies the computations on an interval basis.",
+    "categories": [
+      "Signal Inspection"
+    ],
     "properties": {
       "averaging_interval": {
         "title": "Averaging Interval",
@@ -100,6 +106,9 @@
   "nio/Reduce": {
     "version": "0.1.0",
     "description": "DEPRECATED, USE Aggregate INSTEAD - Computes some arithmetic information about groups of signals.",
+    "categories": [
+      "Signal Inspection"
+    ],
     "properties": {
       "group_by": {
         "title": "Group By",
@@ -134,6 +143,9 @@
   "nio/ReduceStream": {
     "version": "0.1.0",
     "description": "DEPRECATED, USE AggregateStream INSTEAD - Computes some arithmetic information about a streams of data and notifies the computations on an interval basis.",
+    "categories": [
+      "Signal Inspection"
+    ],
     "properties": {
       "averaging_interval": {
         "title": "Averaging Interval",
