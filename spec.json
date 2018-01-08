@@ -37,7 +37,7 @@
     }
   },
   "nio/AggregateStream": {
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "The AggregateStream block calculates the same statistics as the [Aggregate](https://blocks.n.io/Aggregate) block, but rather than using a single signal's list, it uses an attribute that is a number and calculates the stats over the configured **averaging interval**.",
     "categories": [
       "Signal Inspection"

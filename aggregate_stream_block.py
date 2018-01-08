@@ -12,7 +12,7 @@ from .aggregate_block import Aggregate
 
 class AggregateStream(Persistence, Aggregate):
 
-    version = VersionProperty("0.1.0")
+    version = VersionProperty("0.1.1")
     report_interval = TimeDeltaProperty(
         default={"seconds": 1}, title="Report Interval")
     averaging_interval = TimeDeltaProperty(
