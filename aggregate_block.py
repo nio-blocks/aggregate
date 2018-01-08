@@ -15,7 +15,7 @@ class Aggregate(GroupBy, Block):
         group_by (Property): The value by which signals are grouped.
         value (Property): The value to be passed to aggregate functions.
     """
-    version = VersionProperty("0.1.0")
+    version = VersionProperty("0.1.1")
     value = Property(
         title="Aggregate Input Value", default="{{ $value }}")
 

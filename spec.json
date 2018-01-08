@@ -1,6 +1,6 @@
 {
   "nio/Aggregate": {
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "The Aggregate block takes an attribute from the incoming signal and emits a signal containing the attribute's average, count, max, min, and sum.  The attribute should be a list of numbers.",
     "categories": [
       "Signal Inspection"
