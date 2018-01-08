@@ -1,7 +1,7 @@
 {
   "nio/Aggregate": {
     "version": "0.1.0",
-    "description": "Computes some arithmetic information about groups of signals.",
+    "description": "The Aggregate block takes an attribute from the incoming signal and emits a signal containing the attribute's average, count, max, min, and sum.  The attribute should be a list of numbers.",
     "categories": [
       "Signal Inspection"
     ],
@@ -31,14 +31,14 @@
     },
     "commands": {
       "groups": {
-        "description": "Displays the current groupings of signals.",
+        "description": "Returns a list of the block’s current signal groupings.",
         "params": {}
       }
     }
   },
   "nio/AggregateStream": {
     "version": "0.1.0",
-    "description": "Computes some arithmetic information about a streams of data and notifies the computations on an interval basis.",
+    "description": "The AggregateStream block calculates the same statistics as the [Aggregate](https://blocks.n.io/Aggregate) block, but rather than using a single signal's list, it uses an attribute that is a number and calculates the stats over the configured **averaging interval**.",
     "categories": [
       "Signal Inspection"
     ],
@@ -46,7 +46,7 @@
       "averaging_interval": {
         "title": "Averaging Interval",
         "type": "TimeDeltaType",
-        "description": "What period of time to compute the averages/min/max/etc for. This is a 'trailing' field, so setting it to 24 hours will always notify information about the **trailing** 24 hours.",
+        "description": "What period of time to compute the averages/count/min/max/sum for. This is a 'trailing' field, so setting it to 24 hours will always notify information about the *trailing* 24 hours.",
         "default": {
           "seconds": 5
         }
@@ -54,7 +54,7 @@
       "backup_interval": {
         "title": "Backup Interval",
         "type": "TimeDeltaType",
-        "description": "Period at which stream states are backed up to disk using persistance.",
+        "description": "An interval of time that specifies how often persisted data is saved.",
         "default": {
           "seconds": 3600
         }
@@ -62,19 +62,19 @@
       "group_by": {
         "title": "Group By",
         "type": "Type",
-        "description": "Attribute to group signals by. A different output signal will be produced for each group.",
+        "description": "The signal attribute on the incoming signal whose values will be used to define groups on the outgoing signal.",
         "default": null
       },
       "load_from_persistence": {
         "title": "Load from Persistence?",
         "type": "BoolType",
-        "description": "If true, the previous state of the stream/interval is loaded upon block restart.",
+        "description": "If `True`, the block’s state will be saved when the block is stopped, and reloaded once the block is restarted.",
         "default": true
       },
       "report_interval": {
         "title": "Report Interval",
         "type": "TimeDeltaType",
-        "description": "How often to notify signals from this block. Note that signals are not notified based on incoming signals, but rather this interval.",
+        "description": "How often to emit signals from this block. Note that signals are not emitted based on incoming signals, but rather this time interval.",
         "default": {
           "seconds": 1
         }
@@ -98,7 +98,7 @@
     },
     "commands": {
       "groups": {
-        "description": "Displays the current groupings of signals.",
+        "description": "Returns a list of the block’s current signal groupings.",
         "params": {}
       }
     }
